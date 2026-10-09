@@ -69,12 +69,19 @@ img,svg{display:block}
 .links a::after{content:"";position:absolute;left:0;bottom:-6px;height:1px;width:0;background:var(--grad);transition:.25s}
 .links a:hover::after{width:100%}
 .nav-cta{display:flex;align-items:center;gap:12px;min-width:0}
-.conn{display:flex;align-items:center;gap:10px;min-width:0}
+.conn{display:flex;align-items:center;gap:10px;min-width:0;position:relative}
+.iconbtn{padding:8px 11px;font-size:15px;line-height:1;border-radius:11px}
+.conn-panel{position:absolute;right:0;top:calc(100% + 8px);width:min(280px,78vw);background:#0e0e1a;
+  border:1px solid var(--stroke-2);border-radius:14px;padding:12px;box-shadow:var(--sh);z-index:60;
+  display:flex;flex-direction:column;gap:8px}
+.conn-panel .hint{font-size:11px}
+.conn-panel input{width:100%}
+.conn-panel[hidden]{display:none}
 @media(max-width:960px){.links{display:none}}
 @media(max-width:760px){
   .nav{flex-wrap:wrap;gap:12px}
   .nav-cta{flex:1 1 100%;min-width:0;flex-wrap:wrap;gap:10px}
-  .conn{flex:1 1 100%;min-width:0}
+  .conn{flex:1 1 100%;min-width:0;justify-content:flex-end}
   #apiBase{width:auto;min-width:0;flex:1}
   .nav-cta .btn.primary{flex:1 1 100%;justify-content:center}
 }

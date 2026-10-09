@@ -26,7 +26,7 @@
 <header class="nav" id="nav">
   <a class="brand" href="#top">
     <span class="mark" aria-hidden="true">
-      <svg viewBox="0 0 32 32" width="30" height="30"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b7bff"/><stop offset=".55" stop-color="#2fe6d0"/><stop offset="1" stop-color="#ffb35c"/></linearGradient></defs><path d="M7 22c0-3.2 3.4-4.4 9-4.4s9 1.2 9 4.4-3.4 4.4-9 4.4-9-1.2-9-4.4Z" fill="url(#lg)" opacity=".92"/><circle cx="16" cy="10.5" r="6.2" fill="none" stroke="url(#lg)" stroke-width="2.2"/><circle cx="16" cy="10.5" r="2.1" fill="url(#lg)"/></svg>
+      <svg viewBox="0 0 32 32" width="28" height="28"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b7bff"/><stop offset=".55" stop-color="#2fe6d0"/><stop offset="1" stop-color="#ffb35c"/></linearGradient></defs><rect x="5" y="13" width="3.4" height="6" rx="1.7" fill="url(#lg)"/><rect x="11.3" y="9" width="3.4" height="14" rx="1.7" fill="url(#lg)"/><rect x="17.6" y="5.5" width="3.4" height="21" rx="1.7" fill="url(#lg)"/><rect x="23.9" y="11" width="3.4" height="10" rx="1.7" fill="url(#lg)"/></svg>
     </span>
     <span class="bt"><b>अभिषेक</b><em>Abhishek AI</em></span>
   </a>
@@ -39,9 +39,14 @@
   </nav>
   <div class="nav-cta">
     <div class="conn" id="connBox">
-      <span class="dot" id="connDot" title="backend status"></span>
-      <input id="apiBase" type="url" spellcheck="false" placeholder="backend URL (blank = this site)" aria-label="Backend API URL" />
-      <button class="btn sm" id="connectBtn">Connect</button>
+      <span class="dot" id="connDot" title="engine status"></span>
+      <button class="btn ghost sm iconbtn" id="connToggle" aria-label="Backend settings" title="Backend settings">⚙</button>
+      <div class="conn-panel" id="connPanel" hidden>
+        <label class="hint" for="apiBase">Backend engine</label>
+        <input id="apiBase" type="url" spellcheck="false" placeholder="blank = this site's engine" aria-label="Backend API URL" />
+        <button class="btn primary sm" id="connectBtn">Connect</button>
+        <span class="hint">Leave blank to use this site's own engine (Netlify).</span>
+      </div>
     </div>
     <a href="#launch" class="btn primary">Launch a call</a>
   </div>
@@ -261,7 +266,7 @@
 <footer class="foot">
   <div class="foot-grid">
     <div class="foot-brand">
-      <div class="brand"><span class="mark"><svg viewBox="0 0 32 32" width="26" height="26"><path d="M7 22c0-3.2 3.4-4.4 9-4.4s9 1.2 9 4.4-3.4 4.4-9 4.4-9-1.2-9-4.4Z" fill="url(#lg)"/><circle cx="16" cy="10.5" r="6.2" fill="none" stroke="url(#lg)" stroke-width="2.2"/></svg></span><span class="bt"><b>अभिषेक</b><em>Abhishek AI</em></span></div>
+      <div class="brand"><span class="mark"><svg viewBox="0 0 32 32" width="24" height="24"><rect x="5" y="13" width="3.4" height="6" rx="1.7" fill="url(#lg)"/><rect x="11.3" y="9" width="3.4" height="14" rx="1.7" fill="url(#lg)"/><rect x="17.6" y="5.5" width="3.4" height="21" rx="1.7" fill="url(#lg)"/><rect x="23.9" y="11" width="3.4" height="10" rx="1.7" fill="url(#lg)"/></svg></span><span class="bt"><b>अभिषेक</b><em>Abhishek AI</em></span></div>
       <p>An elite Hindi voice calling agent. Built on Sarvam AI and Twilio.</p>
     </div>
     <div class="foot-col"><h4>Product</h4><a href="#voices">Voices</a><a href="#how">How it works</a><a href="#features">Capabilities</a></div>

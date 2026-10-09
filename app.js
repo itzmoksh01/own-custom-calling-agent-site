@@ -294,4 +294,5 @@ $("#yr").textContent = new Date().getFullYear();
   checkStatus();
   setInterval(checkStatus, 30000);
   $("#statusCheck").onclick = checkStatus;
+  $("#connToggle").onclick = () => { const p = $("#connPanel"); p.hidden = !p.hidden; };
 })();

@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Abhishek AI — Hindi Voice Calling Agent</title>
+<meta name="description" content="An elite Hindi voice agent that calls anyone, in a hyper-realistic male or female voice, on your behalf. Built on Sarvam AI." />
+<meta name="theme-color" content="#07070c" />
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="bg" aria-hidden="true">
+  <span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span><span class="orb o4"></span>
+  <span class="jali"></span>
+</div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- announcement -->
+<div class="topbar"><span class="tdot"></span> Hindi voice agents · powered by <b>Sarvam&nbsp;Bulbul</b> · male &amp; female voices <a href="#voices">Hear them →</a></div>
+
+<!-- nav -->
+<header class="nav" id="nav">
+  <a class="brand" href="#top">
+    <span class="mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32" width="30" height="30"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b7bff"/><stop offset=".55" stop-color="#2fe6d0"/><stop offset="1" stop-color="#ffb35c"/></linearGradient></defs><path d="M7 22c0-3.2 3.4-4.4 9-4.4s9 1.2 9 4.4-3.4 4.4-9 4.4-9-1.2-9-4.4Z" fill="url(#lg)" opacity=".92"/><circle cx="16" cy="10.5" r="6.2" fill="none" stroke="url(#lg)" stroke-width="2.2"/><circle cx="16" cy="10.5" r="2.1" fill="url(#lg)"/></svg>
+    </span>
+    <span class="bt"><b>अभिषेक</b><em>Abhishek AI</em></span>
+  </a>
+  <nav class="links">
+    <a href="#voices">Voices</a>
+    <a href="#how">How it works</a>
+    <a href="#features">Capabilities</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <div class="nav-cta">
+    <div class="conn" id="connBox">
+      <span class="dot" id="connDot" title="backend status"></span>
+      <input id="apiBase" type="url" spellcheck="false" placeholder="backend URL…" aria-label="Backend API URL" />
+      <button class="btn sm" id="connectBtn">Connect</button>
+    </div>
+    <a href="#launch" class="btn primary">Launch a call</a>
+  </div>
+</header>
+
+<main id="top">
+  <!-- hero -->
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow reveal">Hindi · Hyper-realistic · Male &amp; Female</span>
+      <h1 class="reveal">Calls <em>anyone</em>, in Hindi —<br/>in a voice that <span class="grad">sounds real.</span></h1>
+      <p class="lead reveal">An elite AI calling agent that speaks on your behalf. Pick a voice, tell it what to say, and it dials — introducing itself as your AI assistant and handling the whole conversation, naturally.</p>
+      <div class="hero-cta reveal">
+        <a href="#launch" class="btn primary lg">Launch a call</a>
+        <a href="#voices" class="btn ghost lg"><span class="play"></span> Hear the voices</a>
+      </div>
+      <div class="hero-tags reveal">
+        <span>✦ 2 native voices</span><span>✦ Custom instructions</span><span>✦ Email summaries</span>
+      </div>
+    </div>
+    <div class="hero-visual reveal" aria-hidden="true">
+      <div class="orb-stage">
+        <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+        <div class="orb3d"><span class="grain"></span></div>
+      </div>
+      <div class="callcard">
+        <div class="cc-head"><span class="live"></span> Live call · <b>Ankit Bhaiya</b></div>
+        <div class="cc-line ai">नमस्ते! मैं अभिषेक की AI असिस्टेंट हूँ।</div>
+        <div class="cc-line them">हाँ बोलिए बेटा।</div>
+        <div class="cc-line ai">आपकी नींद कैसी आ रही है?</div>
+        <div class="cc-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- language ticker -->
+  <section class="ticker" aria-label="Supported languages">
+    <div class="track">
+      <span>हिन्दी</span><span>·</span><span>தமிழ்</span><span>·</span><span>తెలుగు</span><span>·</span><span>ಕನ್ನಡ</span><span>·</span><span>മലയാളം</span><span>·</span><span>বাংলা</span><span>·</span><span>ગુજરાતી</span><span>·</span><span>ਪੰਜਾਬੀ</span><span>·</span><span>ଓଡ଼ିଆ</span><span>·</span>
+      <span>हिन्दी</span><span>·</span><span>தமிழ்</span><span>·</span><span>తెలుగు</span><span>·</span><span>ಕನ್ನಡ</span><span>·</span><span>മലയാളം</span><span>·</span><span>বাংলা</span><span>·</span><span>ગુજરાતી</span><span>·</span><span>ਪੰਜਾਬੀ</span><span>·</span><span>ଓଡ଼ିଆ</span><span>·</span>
+    </div>
+  </section>
+
+  <!-- stats -->
+  <section class="stats">
+    <div class="stat reveal"><b data-count="2">2</b><span>native voices — male &amp; female</span></div>
+    <div class="stat reveal"><b data-count="250" data-suffix="ms">250ms</b><span>sub-250ms first audio</span></div>
+    <div class="stat reveal"><b data-count="100" data-suffix="%">100%</b><span>Hindi-native, Devanagari-true</span></div>
+    <div class="stat reveal"><b data-count="24" data-suffix="/7">24/7</b><span>always on, answers on your behalf</span></div>
+  </section>
+
+  <!-- features -->
+  <section class="section" id="features">
+    <div class="sec-head reveal">
+      <span class="kicker">Capabilities</span>
+      <h2>Everything an elite calling agent needs.</h2>
+      <p>Built on Sarvam AI for the voice and language, Twilio for the line — nothing bolted on.</p>
+    </div>
+    <div class="feat-grid">
+      <article class="feat reveal"><span class="ico">◉</span><h3>Hyper-realistic voices</h3><p>Calm, natural Indian male and female Hindi voices — pick the one that fits the call.</p></article>
+      <article class="feat reveal"><span class="ico">अ</span><h3>Hindi-native</h3><p>Speaks true Devanagari Hindi with correct prosody, names and code-switching.</p></article>
+      <article class="feat reveal"><span class="ico">⌘</span><h3>Your instructions</h3><p>Type what to say — wishes, reminders, check-ins — and it handles it in its own words.</p></article>
+      <article class="feat reveal"><span class="ico">◈</span><h3>Listens &amp; replies</h3><p>Real-time speech recognition and an LLM brain keep the conversation flowing naturally.</p></article>
+      <article class="feat reveal"><span class="ico">✉</span><h3>Email summaries</h3><p>Every call is summarised and emailed to you — concerns first, so nothing is missed.</p></article>
+      <article class="feat reveal"><span class="ico">⛨</span><h3>Consent-first</h3><p>Always identifies itself as an AI assistant. Honest by design, never an impersonation.</p></article>
+    </div>
+  </section>
+
+  <!-- how it works -->
+  <section class="section" id="how">
+    <div class="sec-head reveal">
+      <span class="kicker">How it works</span>
+      <h2>From instruction to conversation in four steps.</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><span class="n">01</span><h3>Pick a voice</h3><p>Choose a female or male Hindi voice and preview it instantly.</p></div>
+      <div class="step reveal"><span class="n">02</span><h3>Give instructions</h3><p>Run the health check-in, or type exactly what the AI should do on your behalf.</p></div>
+      <div class="step reveal"><span class="n">03</span><h3>It calls</h3><p>The agent dials, introduces itself as your AI assistant, and talks naturally.</p></div>
+      <div class="step reveal"><span class="n">04</span><h3>You get the summary</h3><p>Every call is transcribed, summarised and emailed to you.</p></div>
+    </div>
+  </section>
+
+  <!-- voice studio -->
+  <section class="section app" id="voices">
+    <div class="sec-head reveal">
+      <span class="kicker">Voice studio</span>
+      <h2>Hear it before it dials.</h2>
+      <p>Pick a voice and play a preview. Connect your backend to hear the real thing.</p>
+    </div>
+    <div class="grid two">
+      <div class="card reveal">
+        <div class="card-head">
+          <h3>Choose a voice</h3>
+          <div class="seg" id="genderSeg" role="tablist">
+            <button data-gender="female" class="active" role="tab">Female</button>
+            <button data-gender="male" role="tab">Male</button>
+          </div>
+        </div>
+        <div class="voice-list" id="voiceList"></div>
+        <label class="field"><span>Preview text</span>
+          <textarea id="previewText" rows="3">नमस्ते! मैं अभिषेक की AI असिस्टेंट हूँ। मैं आपका हाल जानने के लिए कॉल कर रही हूँ।</textarea>
+        </label>
+        <div class="preview-row">
+          <button class="btn primary" id="previewBtn"><span class="eq"><i></i><i></i><i></i><i></i></span> Play preview</button>
+          <audio id="previewAudio" hidden></audio>
+          <span class="hint" id="previewHint">Connect your backend to preview</span>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <div class="card-head"><h3>What should the AI do?</h3></div>
+        <div class="seg wide" id="modeSeg">
+          <button data-mode="health" class="active">Health check-in</button>
+          <button data-mode="custom">Custom instructions</button>
+        </div>
+        <div id="healthNote" class="note">Runs the built-in Hindi health check-in — sleep, diet, pain, medicines, mood — and emails you a summary.</div>
+        <label class="field" id="instrWrap" hidden><span>Your instructions to the AI</span>
+          <textarea id="instructions" rows="7" placeholder="Example: Wish Ankit bhaiya a happy birthday, ask if he has taken his BP medicine today, remind him about Friday's doctor visit, and confirm he'll come for dinner on Sunday. Be warm and respectful."></textarea>
+          <small class="hint">The AI speaks Hindi, identifies itself as your AI assistant, and follows these in its own words. Keep it honest — no impersonation.</small>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- compose & launch -->
+  <section class="section app" id="launch">
+    <div class="sec-head reveal">
+      <span class="kicker">Compose &amp; launch</span>
+      <h2>Pick who, then send it.</h2>
+    </div>
+    <div class="card reveal">
+      <div class="card-head">
+        <h3>Who should it call?</h3>
+        <div class="row">
+          <input id="manualNumber" class="mini" placeholder="Or any number  +91…" />
+          <button class="btn ghost sm" id="addManual">Add</button>
+          <button class="btn ghost sm" id="selectAll">Select all</button>
+        </div>
+      </div>
+      <div class="chips" id="contactChips"></div>
+    </div>
+
+    <div class="launch reveal">
+      <div class="launch-inner">
+        <div class="launch-info"><h3 id="launchTitle">Ready to dial</h3><p id="launchSub">Pick a voice and at least one contact.</p></div>
+        <button class="btn primary big" id="callBtn" disabled>Place calls</button>
+      </div>
+    </div>
+
+    <div class="card reveal" id="activityCard">
+      <div class="card-head"><h3>Call activity</h3><button class="btn ghost sm" id="refreshBtn">Refresh</button></div>
+      <div id="activity" class="activity"><div class="empty">No calls yet. Your summaries will appear here.</div></div>
+    </div>
+  </section>
+
+  <!-- use cases -->
+  <section class="section">
+    <div class="sec-head reveal"><span class="kicker">Use cases</span><h2>One agent, many jobs.</h2></div>
+    <div class="usecases">
+      <article class="uc reveal"><h3>Elder care check-ins</h3><p>Ask parents and relatives how they're doing — sleep, appetite, medicines — and get a summary.</p></article>
+      <article class="uc reveal"><h3>Festival &amp; birthday wishes</h3><p>Send warm, personal Hindi wishes to everyone on your list, in a voice that feels human.</p></article>
+      <article class="uc reveal"><h3>Appointment reminders</h3><p>Gently remind people about doctor visits, payments or meetings — and confirm they'll come.</p></article>
+      <article class="uc reveal"><h3>Follow-ups</h3><p>Circle back with anyone, with your exact message, and know how it went.</p></article>
+    </div>
+  </section>
+
+  <!-- faq -->
+  <section class="section" id="faq">
+    <div class="sec-head reveal"><span class="kicker">FAQ</span><h2>Good to know.</h2></div>
+    <div class="faq reveal">
+      <details open><summary>Does the AI pretend to be me?</summary><p>No. It always introduces itself as <b>your AI assistant</b>. That honesty is built in and can't be switched off — it's what keeps these calls legitimate.</p></details>
+      <details><summary>Can it call any number?</summary><p>Yes — pick a saved contact or type any number. You place the calls from your own telephony account.</p></details>
+      <details><summary>What do I need to run it?</summary><p>A Sarvam API key (voice, speech, LLM), a Twilio number, and this control panel connected to the backend. The panel is hosted here; the calling brain runs on a small server.</p></details>
+      <details><summary>Is my data safe?</summary><p>Transcripts and summaries are stored only where you run the backend, and emailed only to you. Keys live in your server's environment — never in this page.</p></details>
+    </div>
+  </section>
+
+  <!-- cta band -->
+  <section class="cta-band reveal">
+    <div class="cta-in">
+      <h2>Ready to make your first call?</h2>
+      <p>Connect your backend, pick a voice, and let it talk on your behalf.</p>
+      <a href="#voices" class="btn primary lg">Start now</a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <div class="brand"><span class="mark"><svg viewBox="0 0 32 32" width="26" height="26"><path d="M7 22c0-3.2 3.4-4.4 9-4.4s9 1.2 9 4.4-3.4 4.4-9 4.4-9-1.2-9-4.4Z" fill="url(#lg)"/><circle cx="16" cy="10.5" r="6.2" fill="none" stroke="url(#lg)" stroke-width="2.2"/></svg></span><span class="bt"><b>अभिषेक</b><em>Abhishek AI</em></span></div>
+      <p>An elite Hindi voice calling agent. Built on Sarvam AI and Twilio.</p>
+    </div>
+    <div class="foot-col"><h4>Product</h4><a href="#voices">Voices</a><a href="#how">How it works</a><a href="#features">Capabilities</a></div>
+    <div class="foot-col"><h4>Platform</h4><a href="https://www.sarvam.ai" target="_blank" rel="noopener">Sarvam AI</a><a href="https://www.twilio.com" target="_blank" rel="noopener">Twilio</a><a href="#faq">FAQ</a></div>
+    <div class="foot-col"><h4>Legal</h4><a href="#faq">Consent</a><a href="#faq">Privacy</a></div>
+  </div>
+  <div class="foot-bar">
+    <span>© <span id="yr"></span> Abhishek AI · Voice agent</span>
+    <span class="disclaimer">Always identifies itself as an AI assistant · Call with consent</span>
+  </div>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="app.js"></script>
+</body>
+</html>

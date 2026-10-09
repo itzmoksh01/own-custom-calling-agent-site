@@ -129,8 +129,7 @@ function updateLaunch() {
 
 /* ---------- backend ---------- */
 async function connect() {
-  const base = $("#apiBase").value.trim().replace(/\/$/, "");
-  if (!base) return toast("Paste your backend URL first", "err");
+  const base = $("#apiBase").value.trim().replace(/\/$/, "");   // blank = same site
   state.apiBase = base;
   localStorage.setItem("apiBase", base);
   try {
@@ -138,12 +137,12 @@ async function connect() {
     if (!r.ok) throw new Error(r.status);
     state.connected = true;
     $("#connDot").className = "dot ok";
-    toast("Backend connected ✓", "ok");
+    toast("Connected ✓", "ok");
     loadVoices(); loadContacts(); loadActivity();
   } catch {
     state.connected = false;
     $("#connDot").className = "dot bad";
-    toast("Couldn't reach the backend. Check the URL and that it's running.", "err");
+    toast("Couldn't reach the agent API. If the backend runs elsewhere, paste its URL.", "err");
   }
 }
 async function loadVoices() {
@@ -262,5 +261,5 @@ $("#yr").textContent = new Date().getFullYear();
 (function init() {
   $("#apiBase").value = state.apiBase;
   renderVoices(); renderContacts(); updateLaunch();
-  if (state.apiBase) connect();
+  connect();   // same-origin by default (works when the whole project runs on Netlify)
 })();

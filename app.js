@@ -160,6 +160,14 @@ async function checkStatus() {
     dot.className = "dot ok";
     detail.textContent = j.ok ? "Online" : "Unknown";
     lat.textContent = `${ms} ms`;
+    if (j.checks) {
+      const miss = [];
+      if (!j.checks.sarvam) miss.push("Sarvam key");
+      if (!j.checks.twilio) miss.push("Twilio");
+      if (!j.checks.email) miss.push("email");
+      detail.textContent = miss.length ? `Online — missing: ${miss.join(", ")}` : "Online — all set";
+      if (j.checks.from_number) lat.textContent = `${ms} ms · from ${j.checks.from_number}`;
+    }
   } catch {
     dot.className = "dot bad";
     detail.textContent = "Offline — check the URL or that the engine is running";

@@ -139,12 +139,33 @@ async function connect() {
     $("#connDot").className = "dot ok";
     toast("Connected ✓", "ok");
     loadVoices(); loadContacts(); loadActivity();
+    checkStatus();
   } catch {
     state.connected = false;
     $("#connDot").className = "dot bad";
     toast("Couldn't reach the agent API. If the backend runs elsewhere, paste its URL.", "err");
   }
 }
+async function checkStatus() {
+  const dot = $("#statusDot"), label = $("#statusLabel"), detail = $("#statusDetail"), lat = $("#statusLatency");
+  const engine = state.apiBase ? state.apiBase.replace(/^https?:\/\//, "") : "Netlify functions (this site)";
+  label.textContent = engine;
+  dot.className = "dot"; detail.textContent = ""; lat.textContent = "";
+  const t0 = performance.now();
+  try {
+    const r = await fetch(api("/api/health"));
+    const ms = Math.round(performance.now() - t0);
+    if (!r.ok) throw new Error(r.status);
+    const j = await r.json();
+    dot.className = "dot ok";
+    detail.textContent = j.ok ? "Online" : "Unknown";
+    lat.textContent = `${ms} ms`;
+  } catch {
+    dot.className = "dot bad";
+    detail.textContent = "Offline — check the URL or that the engine is running";
+  }
+}
+
 async function loadVoices() {
   try { const r = await fetch(api("/api/voices")); if (r.ok) { state.voices = await r.json(); state.voice = state.voices[state.gender][0]; renderVoices(); } } catch {}
 }
@@ -262,4 +283,7 @@ $("#yr").textContent = new Date().getFullYear();
   $("#apiBase").value = state.apiBase;
   renderVoices(); renderContacts(); updateLaunch();
   connect();   // same-origin by default (works when the whole project runs on Netlify)
+  checkStatus();
+  setInterval(checkStatus, 30000);
+  $("#statusCheck").onclick = checkStatus;
 })();

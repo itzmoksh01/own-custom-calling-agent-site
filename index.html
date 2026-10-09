@@ -210,6 +210,16 @@
       </div>
     </div>
 
+    <div class="card reveal" id="statusCard">
+      <div class="card-head"><h3>Engine status</h3><button class="btn ghost sm" id="statusCheck">Check now</button></div>
+      <div class="status-row">
+        <span class="dot" id="statusDot"></span>
+        <b id="statusLabel">Checking…</b>
+        <span class="muted" id="statusDetail"></span>
+        <span class="muted m2" id="statusLatency"></span>
+      </div>
+    </div>
+
     <div class="card reveal" id="activityCard">
       <div class="card-head"><h3>Call activity</h3><button class="btn ghost sm" id="refreshBtn">Refresh</button></div>
       <div id="activity" class="activity"><div class="empty">No calls yet. Your summaries will appear here.</div></div>

@@ -289,6 +289,11 @@ textarea:focus,.mini:focus{border-color:var(--stroke-2);background:var(--panel-2
 .rec p{margin:0;color:var(--muted);font-size:13.5px}
 .empty{color:var(--muted-2);text-align:center;padding:22px;border:1px dashed var(--stroke);border-radius:15px;font-size:14px}
 
+/* engine status */
+.status-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:13.5px}
+.status-row b{font-family:var(--disp);font-weight:600}
+.status-row .muted{font-size:12.5px}
+
 /* use cases */
 .usecases{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
 @media(max-width:880px){.usecases{grid-template-columns:1fr 1fr}}

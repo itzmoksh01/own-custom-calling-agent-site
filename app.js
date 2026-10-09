@@ -1,4 +1,4 @@
-/* Abhishek AI — site + control-panel logic (vanilla JS, no build step). */
+/* Own Custom Calling Agent — site + panel logic (vanilla JS). */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
@@ -15,17 +15,8 @@ const FALLBACK_VOICES = {
     { id: "ratan", name: "Ratan", model: "bulbul:v3", desc: "Clear, friendly" },
   ],
 };
-const FALLBACK_CONTACTS = [
-  { name: "Sam", number: "+919045146338", register: "informal" },
-  { name: "Vibhu", number: "+918279349893", register: "informal" },
-  { name: "Harshit", number: "+917895214066", register: "informal" },
-  { name: "Ankit Bhaiya", number: "+917409180589", register: "respectful" },
-  { name: "Vivek Bhaiya", number: "+919760401066", register: "respectful" },
-  { name: "Reena Didi", number: "+919871396433", register: "respectful" },
-  { name: "Rani Didi", number: "+919582454630", register: "respectful" },
-  { name: "Hema Didi", number: "+918800249088", register: "respectful" },
-  { name: "Pallavi Didi", number: "+918755424572", register: "respectful" },
-];
+/* NOTE: contacts are NOT in the public bundle — they are fetched from the
+   admin-only API (/api/contacts) after the admin signs in. */
 
 const state = {
   apiBase: localStorage.getItem("apiBase") || "",
@@ -33,14 +24,18 @@ const state = {
   gender: "female",
   voices: FALLBACK_VOICES,
   voice: FALLBACK_VOICES.female[0],
-  contacts: FALLBACK_CONTACTS,
+  contacts: [],
   selected: new Set(),
   mode: "health",
   manual: [],
+  token: localStorage.getItem("token") || "",
+  user: null,
 };
+const isAdmin = () => !!state.user && state.user.role === "admin";
 
-const initials = (n) => n.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+const initials = (n) => String(n || "?").split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 const api = (p) => `${state.apiBase.replace(/\/$/, "")}${p}`;
+const authHeaders = () => (state.token ? { Authorization: `Bearer ${state.token}` } : {});
 
 function toast(msg, kind = "") {
   const el = $("#toast");
@@ -48,6 +43,85 @@ function toast(msg, kind = "") {
   el.className = `toast show ${kind}`;
   clearTimeout(toast._t);
   toast._t = setTimeout(() => (el.className = "toast"), 3600);
+}
+
+/* ---------- role / visibility ---------- */
+function applyRole() {
+  const admin = isAdmin();
+  $$(".admin-only").forEach((el) => { el.hidden = !admin; });
+  $("#signinBtn").hidden = !!state.user;
+  $("#signoutBtn").hidden = !state.user;
+  const chip = $("#userChip");
+  if (state.user) {
+    chip.hidden = false;
+    chip.textContent = `${state.user.email}${admin ? " · admin" : ""}`;
+  } else {
+    chip.hidden = true;
+  }
+}
+
+/* ---------- auth ---------- */
+let authTab = "login";
+function openAuth(tab = "login") {
+  authTab = tab;
+  $("#authModal").hidden = false;
+  setAuthTab(tab);
+  $("#authMsg").textContent = "";
+}
+function closeAuth() { $("#authModal").hidden = true; }
+function setAuthTab(tab) {
+  authTab = tab;
+  $$("#authTabs button").forEach((b) => b.classList.toggle("active", b.dataset.tab === tab));
+  const signup = tab === "signup";
+  $("#authName").hidden = !signup;
+  $("#authTitle").textContent = signup ? "Create your account" : "Welcome back";
+  $("#authSub").textContent = signup ? "Sign up to use the site." : "Sign in to your account.";
+  $("#authSubmit").textContent = signup ? "Sign up" : "Sign in";
+  $("#authPassword").autocomplete = signup ? "new-password" : "current-password";
+}
+async function doAuth() {
+  const body = {
+    email: $("#authEmail").value.trim(),
+    password: $("#authPassword").value,
+    name: $("#authName").value.trim(),
+  };
+  $("#authMsg").textContent = "Please wait…";
+  try {
+    const r = await fetch(api(`/api/auth/${authTab}`), {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || "Something went wrong.");
+    state.token = j.token; state.user = j.user;
+    localStorage.setItem("token", j.token);
+    closeAuth();
+    applyRole();
+    toast(`Signed in as ${j.user.email}${isAdmin() ? " (admin)" : ""}`, "ok");
+    afterLogin();
+  } catch (e) {
+    $("#authMsg").textContent = e.message;
+  }
+}
+function logout() {
+  state.token = ""; state.user = null; state.contacts = []; state.selected = new Set();
+  localStorage.removeItem("token");
+  applyRole(); renderContacts();
+  toast("Signed out");
+}
+async function loadMe() {
+  if (!state.token) return;
+  try {
+    const r = await fetch(api("/api/auth/me"), { headers: authHeaders() });
+    if (!r.ok) throw new Error();
+    const j = await r.json();
+    state.user = j.user;
+  } catch {
+    state.token = ""; state.user = null; localStorage.removeItem("token");
+  }
+}
+function afterLogin() {
+  loadVoices();
+  if (isAdmin()) { loadContacts(); loadActivity(); checkStatus(); }
 }
 
 /* ---------- voices ---------- */
@@ -71,8 +145,6 @@ $$("#genderSeg button").forEach((b) => b.onclick = () => {
   state.voice = state.voices[state.gender][0];
   renderVoices();
 });
-
-/* ---------- mode ---------- */
 $$("#modeSeg button").forEach((b) => b.onclick = () => {
   $$("#modeSeg button").forEach((x) => x.classList.remove("active"));
   b.classList.add("active");
@@ -82,7 +154,7 @@ $$("#modeSeg button").forEach((b) => b.onclick = () => {
   updateLaunch();
 });
 
-/* ---------- contacts ---------- */
+/* ---------- contacts (admin only) ---------- */
 function renderContacts() {
   const wrap = $("#contactChips");
   wrap.innerHTML = "";
@@ -102,13 +174,13 @@ function renderContacts() {
 }
 $("#selectAll").onclick = () => {
   const all = [...state.contacts, ...state.manual];
-  const everyOn = all.every((c) => state.selected.has(c.number));
+  const everyOn = all.length && all.every((c) => state.selected.has(c.number));
   state.selected = everyOn ? new Set() : new Set(all.map((c) => c.number));
   renderContacts(); updateLaunch();
 };
 $("#addManual").onclick = () => {
   const raw = $("#manualNumber").value.trim().replace(/\s+/g, "");
-  if (!/^\+?\d{8,15}$/.test(raw)) return toast("Enter a valid number, e.g. +919045146338", "err");
+  if (!/^\+?\d{8,15}$/.test(raw)) return toast("Enter a valid number, e.g. +911234567890", "err");
   const num = raw.startsWith("+") ? raw : `+${raw}`;
   if (![...state.contacts, ...state.manual].some((c) => c.number === num))
     state.manual.push({ name: "Custom", number: num, register: "respectful" });
@@ -116,7 +188,6 @@ $("#addManual").onclick = () => {
   $("#manualNumber").value = "";
   renderContacts(); updateLaunch();
 };
-
 function updateLaunch() {
   const n = state.selected.size;
   const v = state.voice ? `${state.voice.name} · ${state.gender}` : "—";
@@ -129,7 +200,7 @@ function updateLaunch() {
 
 /* ---------- backend ---------- */
 async function connect() {
-  const base = $("#apiBase").value.trim().replace(/\/$/, "");   // blank = same site
+  const base = $("#apiBase").value.trim().replace(/\/$/, "");
   state.apiBase = base;
   localStorage.setItem("apiBase", base);
   try {
@@ -137,17 +208,16 @@ async function connect() {
     if (!r.ok) throw new Error(r.status);
     state.connected = true;
     $("#connDot").className = "dot ok";
-    toast("Connected ✓", "ok");
-    loadVoices(); loadContacts(); loadActivity();
     checkStatus();
+    if (isAdmin()) { loadVoices(); loadContacts(); loadActivity(); }
   } catch {
     state.connected = false;
     $("#connDot").className = "dot bad";
-    toast("Couldn't reach the agent API. If the backend runs elsewhere, paste its URL.", "err");
   }
 }
 async function checkStatus() {
   const dot = $("#statusDot"), label = $("#statusLabel"), detail = $("#statusDetail"), lat = $("#statusLatency");
+  if (!dot) return;
   const engine = state.apiBase ? state.apiBase.replace(/^https?:\/\//, "") : "Netlify functions (this site)";
   label.textContent = engine;
   dot.className = "dot"; detail.textContent = ""; lat.textContent = "";
@@ -173,16 +243,17 @@ async function checkStatus() {
     detail.textContent = "Offline — check the URL or that the engine is running";
   }
 }
-
 async function loadVoices() {
   try { const r = await fetch(api("/api/voices")); if (r.ok) { state.voices = await r.json(); state.voice = state.voices[state.gender][0]; renderVoices(); } } catch {}
 }
 async function loadContacts() {
-  try { const r = await fetch(api("/api/contacts")); if (r.ok) { state.contacts = await r.json(); renderContacts(); } } catch {}
+  if (!isAdmin()) return;
+  try { const r = await fetch(api("/api/contacts"), { headers: authHeaders() }); if (r.ok) { state.contacts = await r.json(); renderContacts(); } } catch {}
 }
 async function loadActivity() {
+  if (!isAdmin()) return;
   try {
-    const r = await fetch(api("/api/summaries"));
+    const r = await fetch(api("/api/summaries"), { headers: authHeaders() });
     if (!r.ok) return;
     const items = await r.json();
     const box = $("#activity");
@@ -201,16 +272,14 @@ async function loadActivity() {
     });
   } catch {}
 }
-
-/* ---------- preview ---------- */
 $("#previewBtn").onclick = async () => {
-  if (!state.connected) return toast("Connect your backend first to hear a preview", "err");
+  if (!isAdmin()) return toast("Admins only", "err");
   const btn = $("#previewBtn");
   btn.classList.add("playing"); btn.disabled = true;
   $("#previewHint").textContent = "Synthesising…";
   try {
     const r = await fetch(api("/api/preview"), {
-      method: "POST", headers: { "Content-Type": "application/json" },
+      method: "POST", headers: { "Content-Type": "application/json", ...authHeaders() },
       body: JSON.stringify({ voice: state.voice.id, model: state.voice.model, text: $("#previewText").value }),
     });
     if (!r.ok) throw new Error(await r.text());
@@ -219,14 +288,12 @@ $("#previewBtn").onclick = async () => {
     await a.play();
     $("#previewHint").textContent = `${state.voice.name} · ${state.voice.model}`;
   } catch {
-    toast("Preview failed — check your Sarvam key on the backend.", "err");
+    toast("Preview failed — check your Sarvam key.", "err");
     $("#previewHint").textContent = "Preview failed";
   } finally { btn.classList.remove("playing"); btn.disabled = false; }
 };
-
-/* ---------- place calls ---------- */
 $("#callBtn").onclick = async () => {
-  if (!state.connected) return toast("Connect your backend first", "err");
+  if (!isAdmin()) return toast("Admins only", "err");
   const targets = [...state.selected];
   if (!targets.length) return;
   if (state.mode === "custom" && !$("#instructions").value.trim())
@@ -235,37 +302,40 @@ $("#callBtn").onclick = async () => {
   btn.disabled = true; btn.textContent = "Dialing…";
   try {
     const r = await fetch(api("/api/call"), {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        targets, voice: state.voice.id, model: state.voice.model, gender: state.gender,
-        mode: state.mode, instructions: $("#instructions").value.trim(),
-      }),
+      method: "POST", headers: { "Content-Type": "application/json", ...authHeaders() },
+      body: JSON.stringify({ targets, voice: state.voice.id, model: state.voice.model, gender: state.gender,
+        mode: state.mode, instructions: $("#instructions").value.trim() }),
     });
     if (!r.ok) throw new Error(await r.text());
     const data = await r.json();
     toast(`Placed ${data.placed.length} call${data.placed.length === 1 ? "" : "s"} ✓`, "ok");
     setTimeout(loadActivity, 4000);
-  } catch {
-    toast("Couldn't place calls — check Twilio settings on the backend.", "err");
-  } finally { btn.disabled = false; btn.textContent = "Place calls"; }
+  } catch { toast("Couldn't place calls — check Twilio settings.", "err"); }
+  finally { btn.disabled = false; btn.textContent = "Place calls"; }
 };
-
-$("#connectBtn").onclick = connect;
 $("#refreshBtn").onclick = () => { loadActivity(); toast("Refreshed"); };
 $("#apiBase").addEventListener("keydown", (e) => { if (e.key === "Enter") connect(); });
+$("#connectBtn").onclick = connect;
+
+/* ---------- auth UI wiring ---------- */
+$("#signinBtn").onclick = () => openAuth("login");
+$("#signoutBtn").onclick = logout;
+$("#authClose").onclick = closeAuth;
+$("#authModal").addEventListener("click", (e) => { if (e.target.id === "authModal") closeAuth(); });
+$$("#authTabs button").forEach((b) => b.onclick = () => setAuthTab(b.dataset.tab));
+$("#authSubmit").onclick = doAuth;
+$("#authPassword").addEventListener("keydown", (e) => { if (e.key === "Enter") doAuth(); });
+$("#googleBtn").onclick = () => {
+  $("#authMsg").textContent = "Google sign-in needs a Google OAuth Client ID (set GOOGLE_CLIENT_ID on the server). Email sign-up works now.";
+};
 
 /* ---------- site interactions ---------- */
-// sticky nav state
 const nav = $("#nav");
 addEventListener("scroll", () => nav.classList.toggle("scrolled", scrollY > 12), { passive: true });
-
-// scroll reveal
 const io = new IntersectionObserver((entries) => {
   entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
 }, { threshold: 0.14 });
 $$(".reveal").forEach((el, i) => { el.style.transitionDelay = `${(i % 4) * 60}ms`; io.observe(el); });
-
-// animated counters
 const counters = new IntersectionObserver((entries) => {
   entries.forEach((e) => {
     if (!e.isIntersecting) return;
@@ -282,17 +352,17 @@ const counters = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.6 });
 $$("[data-count]").forEach((el) => counters.observe(el));
-
-// year
 $("#yr").textContent = new Date().getFullYear();
+$("#connToggle").onclick = () => { const p = $("#connPanel"); p.hidden = !p.hidden; };
 
 /* ---------- boot ---------- */
-(function init() {
+(async function init() {
   $("#apiBase").value = state.apiBase;
   renderVoices(); renderContacts(); updateLaunch();
-  connect();   // same-origin by default (works when the whole project runs on Netlify)
+  await loadMe();
+  applyRole();
+  connect();
   checkStatus();
   setInterval(checkStatus, 30000);
   $("#statusCheck").onclick = checkStatus;
-  $("#connToggle").onclick = () => { const p = $("#connPanel"); p.hidden = !p.hidden; };
 })();

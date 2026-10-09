@@ -28,13 +28,18 @@
     <span class="bt"><b>अभिषेक</b><em>Abhishek AI</em></span>
   </a>
   <nav class="links">
-    <a href="#voices">Voices</a>
+    <a href="#voices" class="admin-only" hidden>Voices</a>
     <a href="#actions">Actions</a>
     <a href="#how">How it works</a>
     <a href="#features">Capabilities</a>
     <a href="#faq">FAQ</a>
   </nav>
   <div class="nav-cta">
+    <div class="auth" id="authBox">
+      <button class="btn ghost sm" id="signinBtn">Sign in</button>
+      <span class="userchip" id="userChip" hidden></span>
+      <button class="btn ghost sm" id="signoutBtn" hidden>Sign out</button>
+    </div>
     <div class="conn" id="connBox">
       <span class="dot" id="connDot" title="engine status"></span>
       <button class="btn ghost sm iconbtn" id="connToggle" aria-label="Backend settings" title="Backend settings">⚙</button>
@@ -45,7 +50,7 @@
         <span class="hint">Leave blank to use this site's own engine (Netlify).</span>
       </div>
     </div>
-    <a href="#launch" class="btn primary">Launch a call</a>
+    <a href="#launch" class="btn primary admin-only" hidden>Launch a call</a>
   </div>
 </header>
 
@@ -70,7 +75,7 @@
         <div class="orb3d"><span class="grain"></span></div>
       </div>
       <div class="callcard">
-        <div class="cc-head"><span class="live"></span> Live call · <b>Ankit Bhaiya</b></div>
+        <div class="cc-head"><span class="live"></span> Live call · <b>Ramesh ji</b></div>
         <div class="cc-line ai">नमस्ते! मैं अभिषेक की AI असिस्टेंट हूँ।</div>
         <div class="cc-line them">हाँ बोलिए बेटा।</div>
         <div class="cc-line ai">आपकी नींद कैसी आ रही है?</div>
@@ -146,7 +151,7 @@
   </section>
 
   <!-- voice studio -->
-  <section class="section app" id="voices">
+  <section class="section app admin-only" id="voices" hidden>
     <div class="sec-head reveal">
       <span class="kicker">Voice studio</span>
       <h2>Hear it before it dials.</h2>
@@ -180,7 +185,7 @@
         </div>
         <div id="healthNote" class="note">Runs the built-in Hindi health check-in — sleep, diet, pain, medicines, mood — and emails you a summary.</div>
         <label class="field" id="instrWrap" hidden><span>Your instructions to the AI</span>
-          <textarea id="instructions" rows="7" placeholder="Example: Wish Ankit bhaiya a happy birthday, ask if he has taken his BP medicine today, remind him about Friday's doctor visit, and confirm he'll come for dinner on Sunday. Be warm and respectful."></textarea>
+          <textarea id="instructions" rows="7" placeholder="Example: Wish Papa a happy birthday, ask if he has taken his medicine today, remind him about Friday's doctor visit, and confirm he'll come for dinner on Sunday. Be warm and respectful."></textarea>
           <small class="hint">The AI speaks Hindi, identifies itself as your AI assistant, and follows these in its own words. Keep it honest — no impersonation.</small>
         </label>
       </div>
@@ -188,7 +193,7 @@
   </section>
 
   <!-- compose & launch -->
-  <section class="section app" id="launch">
+  <section class="section app admin-only" id="launch" hidden>
     <div class="sec-head reveal">
       <span class="kicker">Compose &amp; launch</span>
       <h2>Pick who, then send it.</h2>
@@ -275,6 +280,24 @@
     <span class="disclaimer">Always identifies itself as an AI assistant · Call with consent</span>
   </div>
 </footer>
+
+<div class="authmodal" id="authModal" hidden>
+  <div class="authcard">
+    <button class="authclose" id="authClose" aria-label="Close">✕</button>
+    <h3 id="authTitle">Welcome</h3>
+    <p class="hint" id="authSub">Sign in to your account, or create one.</p>
+    <div class="seg wide" id="authTabs">
+      <button data-tab="login" class="active">Sign in</button>
+      <button data-tab="signup">Sign up</button>
+    </div>
+    <input id="authName" placeholder="Your name" hidden />
+    <input id="authEmail" type="email" placeholder="you@email.com" autocomplete="email" />
+    <input id="authPassword" type="password" placeholder="Password" autocomplete="current-password" />
+    <button class="btn primary authgo" id="authSubmit">Sign in</button>
+    <button class="btn ghost authgo" id="googleBtn">Continue with Google</button>
+    <p class="hint" id="authMsg"></p>
+  </div>
+</div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script src="app.js"></script>

@@ -10,5 +10,5 @@
  * A value typed into the gear/settings box on the site always overrides this.
  */
 window.AGENT_CONFIG = {
-  API_BASE: "",
+  API_BASE: "https://owncustomvoicecallingagent.netlify.app",
 };

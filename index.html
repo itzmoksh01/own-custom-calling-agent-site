@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Abhishek AI — Hindi Voice Calling Agent</title>
-<meta name="description" content="An elite Hindi voice agent that calls anyone, in a hyper-realistic male or female voice, on your behalf. Built on Sarvam AI." />
-<meta name="theme-color" content="#07070c" />
-<script>document.documentElement.classList.add('js')</script>
+<title>Abhishek Calling AI Agent — Hindi Voice Calling Agent</title>
+<meta name="description" content="Abhishek Calling AI Agent — an elite Hindi voice agent that calls anyone, in a hyper-realistic male or female voice, on your behalf. Built on Sarvam AI." />
+<meta name="theme-color" content="#ffffff" />
+<script src="boot.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -20,19 +20,42 @@
 <div class="grain" aria-hidden="true"></div>
 
 <!-- nav -->
+<div class="navwrap" id="navwrap">
 <header class="nav" id="nav">
   <a class="brand" href="#top">
     <span class="mark" aria-hidden="true">
       <svg viewBox="0 0 32 32" width="28" height="28"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b7bff"/><stop offset=".55" stop-color="#2fe6d0"/><stop offset="1" stop-color="#ffb35c"/></linearGradient></defs><rect x="5" y="13" width="3.4" height="6" rx="1.7" fill="url(#lg)"/><rect x="11.3" y="9" width="3.4" height="14" rx="1.7" fill="url(#lg)"/><rect x="17.6" y="5.5" width="3.4" height="21" rx="1.7" fill="url(#lg)"/><rect x="23.9" y="11" width="3.4" height="10" rx="1.7" fill="url(#lg)"/></svg>
     </span>
-    <span class="bt"><b>अभिषेक</b><em>Abhishek AI</em></span>
+    <span class="bt"><b>Abhishek</b><em>Calling AI Agent</em></span>
   </a>
-  <nav class="links">
-    <a href="#voices" class="admin-only" hidden>Voices</a>
-    <a href="#actions">Actions</a>
-    <a href="#how">How it works</a>
-    <a href="#features">Capabilities</a>
-    <a href="#faq">FAQ</a>
+  <nav class="links" aria-label="Primary">
+    <a href="#voices" class="navlink admin-only" hidden>Voices</a>
+    <div class="navitem">
+      <button class="navlink dropbtn" type="button" aria-expanded="false">Actions <svg class="chev" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="drop">
+        <a href="#actions"><span class="di">✉</span>Send a text</a>
+        <a href="#actions"><span class="di">✆</span>Send WhatsApp</a>
+        <a href="#actions"><span class="di">▦</span>Log to a sheet</a>
+        <a href="#actions"><span class="di">⏰</span>Set a reminder</a>
+        <a href="#actions"><span class="di">⇄</span>Hand off to you</a>
+        <a href="#actions"><span class="di">?</span>Answer questions</a>
+        <a href="#actions"><span class="di">✎</span>Take a note</a>
+        <a href="#actions"><span class="di">⏻</span>End the call</a>
+      </div>
+    </div>
+    <a href="#how" class="navlink">How it works</a>
+    <div class="navitem">
+      <button class="navlink dropbtn" type="button" aria-expanded="false">Capabilities <svg class="chev" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="drop">
+        <a href="#features"><span class="di">◉</span>Hyper-realistic voices</a>
+        <a href="#features"><span class="di">अ</span>Hindi-native</a>
+        <a href="#features"><span class="di">⌘</span>Your instructions</a>
+        <a href="#features"><span class="di">◈</span>Listens &amp; replies</a>
+        <a href="#features"><span class="di">✉</span>Email summaries</a>
+        <a href="#features"><span class="di">⛨</span>Consent-first</a>
+      </div>
+    </div>
+    <a href="#faq" class="navlink">FAQ</a>
   </nav>
   <div class="nav-cta">
     <div class="auth" id="authBox">
@@ -52,7 +75,22 @@
     </div>
     <a href="#launch" class="btn primary admin-only" hidden>Launch a call</a>
   </div>
+  <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
+    <span></span><span></span><span></span>
+  </button>
+  <span class="nav-progress" id="navProgress" aria-hidden="true"></span>
 </header>
+<div class="drawer" id="drawer">
+  <nav class="drawer-links" aria-label="Menu">
+    <a href="#actions">Actions</a>
+    <a href="#how">How it works</a>
+    <a href="#features">Capabilities</a>
+    <a href="#faq">FAQ</a>
+    <a href="#voices" class="admin-only" hidden>Voices</a>
+    <a href="#launch" class="btn primary drawer-cta admin-only" hidden>Launch a call</a>
+  </nav>
+</div>
+</div>
 
 <main id="top">
   <!-- hero -->
@@ -268,7 +306,7 @@
 <footer class="foot">
   <div class="foot-grid">
     <div class="foot-brand">
-      <div class="brand"><span class="mark"><svg viewBox="0 0 32 32" width="24" height="24"><rect x="5" y="13" width="3.4" height="6" rx="1.7" fill="url(#lg)"/><rect x="11.3" y="9" width="3.4" height="14" rx="1.7" fill="url(#lg)"/><rect x="17.6" y="5.5" width="3.4" height="21" rx="1.7" fill="url(#lg)"/><rect x="23.9" y="11" width="3.4" height="10" rx="1.7" fill="url(#lg)"/></svg></span><span class="bt"><b>अभिषेक</b><em>Abhishek AI</em></span></div>
+      <div class="brand"><span class="mark"><svg viewBox="0 0 32 32" width="24" height="24"><rect x="5" y="13" width="3.4" height="6" rx="1.7" fill="url(#lg)"/><rect x="11.3" y="9" width="3.4" height="14" rx="1.7" fill="url(#lg)"/><rect x="17.6" y="5.5" width="3.4" height="21" rx="1.7" fill="url(#lg)"/><rect x="23.9" y="11" width="3.4" height="10" rx="1.7" fill="url(#lg)"/></svg></span><span class="bt"><b>Abhishek</b><em>Calling AI Agent</em></span></div>
       <p>An elite Hindi voice calling agent. Built on Sarvam AI and Twilio.</p>
     </div>
     <div class="foot-col"><h4>Product</h4><a href="#voices">Voices</a><a href="#how">How it works</a><a href="#features">Capabilities</a></div>
@@ -276,7 +314,7 @@
     <div class="foot-col"><h4>Legal</h4><a href="#faq">Consent</a><a href="#faq">Privacy</a></div>
   </div>
   <div class="foot-bar">
-    <span>© <span id="yr"></span> Abhishek AI · Voice agent</span>
+    <span>© <span id="yr"></span> Abhishek Calling AI Agent · Voice agent</span>
     <span class="disclaimer">Always identifies itself as an AI assistant · Call with consent</span>
   </div>
 </footer>
@@ -300,6 +338,7 @@
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="config.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

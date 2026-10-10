@@ -18,8 +18,11 @@ const FALLBACK_VOICES = {
 /* NOTE: contacts are NOT in the public bundle — they are fetched from the
    admin-only API (/api/contacts) after the admin signs in. */
 
+const CONFIG = (typeof window !== "undefined" && window.AGENT_CONFIG) || {};
 const state = {
-  apiBase: localStorage.getItem("apiBase") || "",
+  // A value saved from the settings box wins; otherwise use the deployment
+  // config from config.js, and failing that this site's own /api.
+  apiBase: localStorage.getItem("apiBase") || CONFIG.API_BASE || "",
   connected: false,
   gender: "female",
   voices: FALLBACK_VOICES,
@@ -34,6 +37,11 @@ const state = {
 const isAdmin = () => !!state.user && state.user.role === "admin";
 
 const initials = (n) => String(n || "?").split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+/* Escape anything interpolated into innerHTML. Call summaries in particular are
+   produced from what a person said on the phone, so they must never be trusted
+   as markup — otherwise a spoken phrase could run script in the admin panel. */
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const api = (p) => `${state.apiBase.replace(/\/$/, "")}${p}`;
 const authHeaders = () => (state.token ? { Authorization: `Bearer ${state.token}` } : {});
 
@@ -132,8 +140,8 @@ function renderVoices() {
     const sel = state.voice && state.voice.id === v.id && state.voice.model === v.model;
     const el = document.createElement("div");
     el.className = `voice${sel ? " sel" : ""}`;
-    el.innerHTML = `<div class="avatar">${initials(v.name)}</div>
-      <div class="meta"><b>${v.name}</b><small>${v.desc}</small></div><div class="check">✓</div>`;
+    el.innerHTML = `<div class="avatar">${esc(initials(v.name))}</div>
+      <div class="meta"><b>${esc(v.name)}</b><small>${esc(v.desc)}</small></div><div class="check">✓</div>`;
     el.onclick = () => { state.voice = v; renderVoices(); updateLaunch(); };
     list.appendChild(el);
   });
@@ -162,8 +170,8 @@ function renderContacts() {
     const sel = state.selected.has(c.number);
     const el = document.createElement("div");
     el.className = `chip${sel ? " sel" : ""}`;
-    el.innerHTML = `<div class="avatar">${initials(c.name)}</div>
-      <div class="meta"><b>${c.name}</b><small>${c.number}</small></div>
+    el.innerHTML = `<div class="avatar">${esc(initials(c.name))}</div>
+      <div class="meta"><b>${esc(c.name)}</b><small>${esc(c.number)}</small></div>
       ${c.register === "respectful" ? '<span class="tag">elder</span>' : ""}`;
     el.onclick = () => {
       state.selected.has(c.number) ? state.selected.delete(c.number) : state.selected.add(c.number);
@@ -266,8 +274,8 @@ async function loadActivity() {
       const label = bad ? "Not reached" : warn ? "Follow up" : "Okay";
       const el = document.createElement("div");
       el.className = "rec";
-      el.innerHTML = `<div class="top"><b>${s.person || "Unknown"}</b><span class="badge ${kind}">${label}</span></div>
-        <p>${s.concerns || "—"}</p>`;
+      el.innerHTML = `<div class="top"><b>${esc(s.person || "Unknown")}</b><span class="badge ${kind}">${label}</span></div>
+        <p>${esc(s.concerns || "—")}</p>`;
       box.appendChild(el);
     });
   } catch {}
@@ -326,12 +334,83 @@ $$("#authTabs button").forEach((b) => b.onclick = () => setAuthTab(b.dataset.tab
 $("#authSubmit").onclick = doAuth;
 $("#authPassword").addEventListener("keydown", (e) => { if (e.key === "Enter") doAuth(); });
 $("#googleBtn").onclick = () => {
-  $("#authMsg").textContent = "Google sign-in needs a Google OAuth Client ID (set GOOGLE_CLIENT_ID on the server). Email sign-up works now.";
+  $("#authMsg").textContent = "Google sign-in isn't set up yet — please use your email and password.";
 };
+// Hide controls that this deployment cannot honour: "Continue with Google"
+// unless a Google client id exists, and the Sign-up tab when the backend has no
+// account store (e.g. the stateless free host).
+(async function authAvailability() {
+  try {
+    const r = await fetch(api("/api/auth/config"));
+    const j = r.ok ? await r.json() : {};
+    if (!j.google) $("#googleBtn").hidden = true;
+    if (!j.signup) {
+      const tab = $("#authTabs button[data-tab='signup']");
+      if (tab) tab.hidden = true;
+    }
+  } catch { $("#googleBtn").hidden = true; }
+})();
 
 /* ---------- site interactions ---------- */
 const nav = $("#nav");
-addEventListener("scroll", () => nav.classList.toggle("scrolled", scrollY > 12), { passive: true });
+const navProgress = $("#navProgress");
+function onNavScroll() {
+  const y = scrollY;
+  nav.classList.toggle("scrolled", y > 12);
+  const max = document.documentElement.scrollHeight - innerHeight;
+  navProgress.style.width = (max > 0 ? Math.min(100, (y / max) * 100) : 0) + "%";
+}
+addEventListener("scroll", onNavScroll, { passive: true });
+addEventListener("resize", onNavScroll);
+onNavScroll();
+
+/* highlight the section you're reading */
+const navTargets = (id) => $$(`.navlink[href="#${id}"], .drawer a[href="#${id}"]`);
+function setActiveLink(id) {
+  $$(".navlink.active, .drawer a.active").forEach((a) => a.classList.remove("active"));
+  if (id) navTargets(id).forEach((a) => a.classList.add("active"));
+}
+const secIO = new IntersectionObserver((entries) => {
+  entries.forEach((e) => { if (e.isIntersecting) setActiveLink(e.target.id); });
+}, { rootMargin: "-45% 0px -50% 0px" });
+["actions", "how", "features", "faq"].forEach((id) => {
+  const el = document.getElementById(id);
+  if (el) secIO.observe(el);
+});
+
+/* hover / tap dropdowns */
+$$(".dropbtn").forEach((btn) => {
+  const item = btn.closest(".navitem");
+  const close = () => { item.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); };
+  const open = () => {
+    $$(".navitem.open").forEach((i) => { i.classList.remove("open"); });
+    item.classList.add("open");
+    btn.setAttribute("aria-expanded", "true");
+  };
+  item.addEventListener("mouseenter", open);
+  item.addEventListener("mouseleave", close);
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    item.classList.contains("open") ? close() : open();
+  });
+});
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".navitem")) $$(".navitem.open").forEach((i) => i.classList.remove("open"));
+});
+addEventListener("keydown", (e) => {
+  if (e.key === "Escape") $$(".navitem.open").forEach((i) => i.classList.remove("open"));
+});
+
+/* mobile drawer */
+const menuBtn = $("#menuBtn"), drawer = $("#drawer");
+function setDrawer(open) {
+  drawer.classList.toggle("open", open);
+  menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+}
+menuBtn.addEventListener("click", () => setDrawer(!drawer.classList.contains("open")));
+$$("#drawer a").forEach((a) => a.addEventListener("click", () => setDrawer(false)));
+addEventListener("resize", () => { if (innerWidth > 960) setDrawer(false); });
 const io = new IntersectionObserver((entries) => {
   entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
 }, { threshold: 0.14 });

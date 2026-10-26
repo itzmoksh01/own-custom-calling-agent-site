@@ -43,6 +43,14 @@ const initials = (n) => String(n || "?").split(/\s+/).map((w) => w[0]).join("").
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const api = (p) => `${state.apiBase.replace(/\/$/, "")}${p}`;
+/* A fetch blocked by the backend's CORS policy fails exactly like a dead host,
+   so say which one it probably is instead of leaving a mystery. */
+function offlineHint() {
+  const crossOrigin = state.apiBase && !state.apiBase.startsWith(location.origin);
+  return crossOrigin
+    ? "Offline — this site isn't allowed by the backend. Add " + location.origin + " to ALLOWED_ORIGINS on the server."
+    : "Offline — check the URL or that the engine is running";
+}
 const authHeaders = () => (state.token ? { Authorization: `Bearer ${state.token}` } : {});
 
 function toast(msg, kind = "") {
@@ -221,6 +229,7 @@ async function connect() {
   } catch {
     state.connected = false;
     $("#connDot").className = "dot bad";
+    toast(offlineHint(), "err");
   }
 }
 async function checkStatus() {
@@ -248,7 +257,7 @@ async function checkStatus() {
     }
   } catch {
     dot.className = "dot bad";
-    detail.textContent = "Offline — check the URL or that the engine is running";
+    detail.textContent = offlineHint();
   }
 }
 async function loadVoices() {
